@@ -1,5 +1,10 @@
 const express = require('express')
+const PORT = process.env.PORT || 8080
 const app = express()
+const http = require('http').Server(app)
+
+
+app.set('port',PORT)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -13,6 +18,6 @@ app.get('/noite', (req, res) => {
     res.send('hello noite!')
   })
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`Example app listening on port ${port}`)
+http.listen(app.get('port'), () => {
+  console.log('Node app is running on port', app.get('port'));
 })
