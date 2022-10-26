@@ -1,20 +1,28 @@
-   const { Client, Pool } = require('pg')
-   const client = new Client({
-       user: process.env.RDS_USERNAME,
-       host: process.env.RDS_HOSTNAME,
-       password: process.env.RDS_PASSWORD
-   })
+const { Client, Pool } = require('pg')
+const pool = new Pool({
+    user: process.env.RDS_USERNAME,
+    host: process.env.RDS_HOSTNAME,
+    password: process.env.RDS_PASSWORD
+})
 
-   const pool = new Pool()
+function query(queryText, callback) {
+    client.connect(err => {
+        console.log('client connected')
+        if (err) {
+            return console.error('Connection error', err)
+        }
+        client.query(queryText, (err, res) => {
+            if (err) {
+                console.error("error running the query", err)
+            } else {
+                callback(res, err, client)
+            }
+            closeClient()
+        })
+    })
+}
 
-   async function query(queryText) {
-       await client.connect()
-       await client.query(queryText, (err, res) => {
-           console.log(err, res)
-           client.end
-       })
-   }
 
-   module.exports = {
-       query
-   }
+module.exports = {
+    pool
+}
